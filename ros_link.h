@@ -14,21 +14,6 @@
 
 using namespace std;
 
-//#define delayTime 2
-#define TRANSFER_TYPE_PUBLISHER "Publisher"
-#define TRANSFER_TYPE_SUBSCRIBER "Subscriber"
-#define PING "PING"
-#define ACK "ACK"
-#define STATUS "STATUS"
-#define STATUS_SIZE 8
-#define STATUS_BEGIN "Begin"
-#define STATUS_NODENAME "NodeName"
-#define STATUS_TOPIC "Topic"
-#define STATUS_TRANSFER_TYPE "Transfer_type"
-#define STATUS_CONNECT_PORT  "Connect_port"
-#define STATUS_END "End"
-#define REQUEST_TOPIC_CHANGE "REQUEST_TOPIC_CHANGE"
-#define REQUEST_TOPIC_CHANGE_ACK "REQUEST_TOPIC_CHANGE_ACK"
 
 class cell_publisher
 {
@@ -55,6 +40,23 @@ class cell_subscriber
 
 class ROS_Link
 {    
+  private:
+	//#define delayTime 2
+	#define TRANSFER_TYPE_PUBLISHER "Publisher"
+	#define TRANSFER_TYPE_SUBSCRIBER "Subscriber"
+	#define PING "PING"
+	#define ACK "ACK"
+	#define STATUS "STATUS"
+	#define STATUS_SIZE 8
+	#define STATUS_BEGIN "Begin"
+	#define STATUS_NODENAME "NodeName"
+	#define STATUS_TOPIC "Topic"
+	#define STATUS_TRANSFER_TYPE "Transfer_type"
+	#define STATUS_CONNECT_PORT  "Connect_port"
+	#define STATUS_END "End"
+	#define REQUEST_TOPIC_CHANGE "REQUEST_TOPIC_CHANGE"
+	#define REQUEST_TOPIC_CHANGE_ACK "REQUEST_TOPIC_CHANGE_ACK"
+
   private:
     float ver_ = 1.1;
     ros::NodeHandle n_;
