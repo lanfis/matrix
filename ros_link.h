@@ -14,7 +14,7 @@
 
 using namespace std;
 
-#define delayTime 2
+//#define delayTime 2
 #define TRANSFER_TYPE_PUBLISHER "Publisher"
 #define TRANSFER_TYPE_SUBSCRIBER "Subscriber"
 #define PING "PING"
