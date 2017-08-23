@@ -54,7 +54,7 @@ class Subscriber_Cell_Float32
     }
 	
   public:
-    Subscriber_Cell_Float32(ros::NodeHandle& n);
+    Subscriber_Cell_Float32();
     ~Subscriber_Cell_Float32();
 };
 
