@@ -34,9 +34,10 @@ class Subscriber_Cell_Float32
     string getTopic() { return topic_; };
 	boost::shared_ptr< std_msgs::Float32 > getMsg() { return msg_; };
 	float getData() { return msg_ -> data; };
-    bool init(string topic, int queue_size, boost::shared_ptr< std_msgs::Float32 >& msg)
+    bool init(ros::NodeHandle& n, string topic, int queue_size, boost::shared_ptr< std_msgs::Float32 >& msg)
     {
       if(sub_ != NULL) this -> shutdown();
+	  n_ = n;
       sub_ = new ros::Subscriber;
       *sub_ = n_.subscribe(topic.c_str(), queue_size, &Subscriber_Cell_Float32::callBack, this);
       this -> topic_ = sub_ -> getTopic();
@@ -57,7 +58,7 @@ class Subscriber_Cell_Float32
     ~Subscriber_Cell_Float32();
 };
 
-Subscriber_Cell_Float32::Subscriber_Cell_Float32(ros::NodeHandle& n) : n_(n), msg_(new std_msgs::Float32)
+Subscriber_Cell_Float32::Subscriber_Cell_Float32() : msg_(new std_msgs::Float32)
 {}
 
 Subscriber_Cell_Float32::~Subscriber_Cell_Float32()

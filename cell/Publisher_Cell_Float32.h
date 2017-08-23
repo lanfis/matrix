@@ -27,17 +27,19 @@ class Publisher_Cell_Float32
   public:
     string getTopic() { return topic_; };
 	boost::shared_ptr< std_msgs::Float32 > getMsg() { return msg_; };
-    bool init(string topic, int queue_size)
+    bool init(ros::NodeHandle& n, string topic, int queue_size)
     {
       if(pub_ != NULL) this -> shutdown();
+	  n_ = n;
       pub_ = new ros::Publisher;
       *pub_ = n_.advertise< std_msgs::Float32 >(topic.c_str(), queue_size);
       this -> topic_ = topic;
       this -> queue_size_ = queue_size;
     }
-    bool init(string topic, int queue_size, ros::SubscriberStatusCallback& connect_cb, ros::SubscriberStatusCallback& disconnect_cb)
+    bool init(ros::NodeHandle& n, string topic, int queue_size, ros::SubscriberStatusCallback& connect_cb, ros::SubscriberStatusCallback& disconnect_cb)
     {
       if(pub_ != NULL) this -> shutdown();
+	  n_ = n;
       pub_ = new ros::Publisher;
       *pub_ = n_.advertise< std_msgs::Float32 >(topic.c_str(), queue_size, connect_cb, disconnect_cb);
       this -> topic_ = pub_ -> getTopic();
@@ -71,11 +73,11 @@ class Publisher_Cell_Float32
     }
 	
   public:
-    Publisher_Cell_Float32(ros::NodeHandle& n);
+    Publisher_Cell_Float32();
     ~Publisher_Cell_Float32();
 };
 
-Publisher_Cell_Float32::Publisher_Cell_Float32(ros::NodeHandle& n) : n_(n), msg_(new std_msgs::Float32)
+Publisher_Cell_Float32::Publisher_Cell_Float32() : msg_(new std_msgs::Float32)
 {}
 
 Publisher_Cell_Float32::~Publisher_Cell_Float32()
