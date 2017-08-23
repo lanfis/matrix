@@ -17,7 +17,7 @@ class Subscriber_Cell_Float32
   private:
     ros::NodeHandle n_;
     ros::Subscriber *sub_ = NULL;
-    string topic_;
+    string topic_ = "";
     int queue_size_ = 4;
     boost::shared_ptr< std_msgs::Float32 > msg_;
 	
@@ -56,6 +56,7 @@ class Subscriber_Cell_Float32
   public:
     Subscriber_Cell_Float32();
     ~Subscriber_Cell_Float32();
+	Subscriber_Cell_Float32 *next = NULL;
 };
 
 Subscriber_Cell_Float32::Subscriber_Cell_Float32() : msg_(new std_msgs::Float32)
@@ -64,6 +65,8 @@ Subscriber_Cell_Float32::Subscriber_Cell_Float32() : msg_(new std_msgs::Float32)
 Subscriber_Cell_Float32::~Subscriber_Cell_Float32()
 {
     shutdown();
+	if(next != this || next != NULL)
+		delete next;
 }
 
 #endif

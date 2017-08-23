@@ -17,7 +17,7 @@ class Publisher_Cell_Float32
   private:
     ros::NodeHandle n_;
     ros::Publisher *pub_ = NULL;
-    string topic_;
+    string topic_ = "";
     int queue_size_ = 4;
     boost::shared_ptr< std_msgs::Float32 > msg_;
 	
@@ -27,7 +27,7 @@ class Publisher_Cell_Float32
   public:
     string getTopic() { return topic_; };
 	boost::shared_ptr< std_msgs::Float32 > getMsg() { return msg_; };
-    bool init(ros::NodeHandle& n, string topic, int queue_size)
+    bool init(ros::NodeHandle& n, string topic, int queue_size, boost::shared_ptr< std_msgs::Float32 >& msg)
     {
       if(pub_ != NULL) this -> shutdown();
 	  n_ = n;
@@ -35,15 +35,17 @@ class Publisher_Cell_Float32
       *pub_ = n_.advertise< std_msgs::Float32 >(topic.c_str(), queue_size);
       this -> topic_ = topic;
       this -> queue_size_ = queue_size;
+      msg = msg_;
     }
-    bool init(ros::NodeHandle& n, string topic, int queue_size, ros::SubscriberStatusCallback& connect_cb, ros::SubscriberStatusCallback& disconnect_cb)
+    bool init(ros::NodeHandle& n, string topic, int queue_size, boost::shared_ptr< std_msgs::Float32 >& msg, ros::SubscriberStatusCallback& connect_cb, ros::SubscriberStatusCallback& disconnect_cb)
     {
       if(pub_ != NULL) this -> shutdown();
 	  n_ = n;
       pub_ = new ros::Publisher;
       *pub_ = n_.advertise< std_msgs::Float32 >(topic.c_str(), queue_size, connect_cb, disconnect_cb);
       this -> topic_ = pub_ -> getTopic();
-      this -> queue_size_ = queue_size;      
+      this -> queue_size_ = queue_size;    
+      msg = msg_;  
     }
     void publish(boost::shared_ptr< std_msgs::Float32 > &msg)
     {
@@ -75,6 +77,7 @@ class Publisher_Cell_Float32
   public:
     Publisher_Cell_Float32();
     ~Publisher_Cell_Float32();
+	Publisher_Cell_Float32 *next = NULL;
 };
 
 Publisher_Cell_Float32::Publisher_Cell_Float32() : msg_(new std_msgs::Float32)
@@ -83,6 +86,8 @@ Publisher_Cell_Float32::Publisher_Cell_Float32() : msg_(new std_msgs::Float32)
 Publisher_Cell_Float32::~Publisher_Cell_Float32()
 {
     shutdown();
+	if(next != this || next != NULL)
+		delete next;
 }
 
 #endif
