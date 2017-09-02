@@ -44,6 +44,15 @@ class Subscriber_Cell_Float32
       this -> queue_size_ = queue_size;
       msg = msg_;
     }
+    bool init(ros::NodeHandle& n, string topic, int queue_size)
+    {
+      if(sub_ != NULL) this -> shutdown();
+	  n_ = n;
+      sub_ = new ros::Subscriber;
+      *sub_ = n_.subscribe(topic.c_str(), queue_size, &Subscriber_Cell_Float32::callBack, this);
+      this -> topic_ = sub_ -> getTopic();
+      this -> queue_size_ = queue_size;
+    }
     void shutdown()
     {
       if(sub_ != NULL)
@@ -56,6 +65,7 @@ class Subscriber_Cell_Float32
   public:
     Subscriber_Cell_Float32();
     ~Subscriber_Cell_Float32();
+	Subscriber_Cell_Float32 *prev = NULL;
 	Subscriber_Cell_Float32 *next = NULL;
 };
 

@@ -11,9 +11,25 @@
 #include <std_msgs/String.h>
 
 #include "config/console_format.h"
+#include "config/connect_port_config.h"
 
 using namespace std;
 
+//#define delayTime 2
+#define TRANSFER_TYPE_PUBLISHER "Publisher"
+#define TRANSFER_TYPE_SUBSCRIBER "Subscriber"
+#define PING "PING"
+#define ACK "ACK"
+#define STATUS "STATUS"
+#define STATUS_SIZE 8
+#define STATUS_BEGIN "Begin"
+#define STATUS_NODENAME "NodeName"
+#define STATUS_TOPIC "Topic"
+#define STATUS_TRANSFER_TYPE "Transfer_type"
+#define STATUS_CONNECT_PORT  "Connect_port"
+#define STATUS_END "End"
+#define REQUEST_TOPIC_CHANGE "REQUEST_TOPIC_CHANGE"
+#define REQUEST_TOPIC_CHANGE_ACK "REQUEST_TOPIC_CHANGE_ACK"
 
 class cell_publisher
 {
@@ -21,7 +37,7 @@ class cell_publisher
 	    string topic;
 	    ros::Publisher* pub = NULL;
 	    string transfer_type = TRANSFER_TYPE_PUBLISHER;
-    	int connect_port = 0;
+    	int connect_port = -1;
 		cell_publisher(){};
 		~cell_publisher(){/* if(pub != NULL) pub -> shutdown(); */};	
 };
@@ -32,7 +48,7 @@ class cell_subscriber
 	    string topic;
 	    ros::Subscriber* sub = NULL;
 	    string transfer_type = TRANSFER_TYPE_SUBSCRIBER;
-	    int connect_port = 0;
+	    int connect_port = -1;
 		cell_subscriber(){};
 		~cell_subscriber(){/* if(sub != NULL) sub -> shutdown(); */};
 };
@@ -40,23 +56,6 @@ class cell_subscriber
 
 class ROS_Link
 {    
-  private:
-	//#define delayTime 2
-	#define TRANSFER_TYPE_PUBLISHER "Publisher"
-	#define TRANSFER_TYPE_SUBSCRIBER "Subscriber"
-	#define PING "PING"
-	#define ACK "ACK"
-	#define STATUS "STATUS"
-	#define STATUS_SIZE 8
-	#define STATUS_BEGIN "Begin"
-	#define STATUS_NODENAME "NodeName"
-	#define STATUS_TOPIC "Topic"
-	#define STATUS_TRANSFER_TYPE "Transfer_type"
-	#define STATUS_CONNECT_PORT  "Connect_port"
-	#define STATUS_END "End"
-	#define REQUEST_TOPIC_CHANGE "REQUEST_TOPIC_CHANGE"
-	#define REQUEST_TOPIC_CHANGE_ACK "REQUEST_TOPIC_CHANGE_ACK"
-
   private:
     float ver_ = 1.1;
     ros::NodeHandle n_;
@@ -136,10 +135,14 @@ class ROS_Link
 	bool add_cell(ros::Subscriber& cell, string& topic, int& connect_port);
 	bool add_cell(ros::Publisher& cell, string& topic);
 	bool add_cell(ros::Subscriber& cell, string& topic);
+	bool add_cell(ros::Publisher& cell, string& topic, Connect_Port connect_type);
+	bool add_cell(ros::Subscriber& cell, string& topic, Connect_Port connect_type);
 	bool add_cell(ros::Publisher* cell, string& topic, int& connect_port);
 	bool add_cell(ros::Subscriber* cell, string& topic, int& connect_port);
 	bool add_cell(ros::Publisher* cell, string& topic);
 	bool add_cell(ros::Subscriber* cell, string& topic);
+	bool add_cell(ros::Publisher* cell, string& topic, Connect_Port connect_type);
+	bool add_cell(ros::Subscriber* cell, string& topic, Connect_Port connect_type);
 	bool erase_cell(string& topic);
 	bool ping();
 	bool status();
@@ -446,7 +449,6 @@ bool ROS_Link::add_cell(ros::Subscriber& cell, string& topic, int& connect_port)
 	return true;
 }
 
-
 bool ROS_Link::add_cell(ros::Publisher& cell, string& topic)
 {
 	if(search_cell_topic(control_pub_, topic))
@@ -460,6 +462,24 @@ bool ROS_Link::add_cell(ros::Subscriber& cell, string& topic)
 	if(search_cell_topic(control_sub_, topic))
 	    return false;
 	add_cell(this -> control_sub_, &cell, topic);
+	return true;
+}
+
+bool ROS_Link::add_cell(ros::Publisher& cell, string& topic, Connect_Port connect_type)
+{
+	if(search_cell_topic(control_pub_, topic))
+	    return false;
+	int port = static_cast<int>(connect_type);
+	add_cell(this -> control_pub_, &cell, topic, port);
+	return true;
+}
+
+bool ROS_Link::add_cell(ros::Subscriber& cell, string& topic, Connect_Port connect_type)
+{
+	if(search_cell_topic(control_sub_, topic))
+	    return false;
+	int port = static_cast<int>(connect_type);
+	add_cell(this -> control_sub_, &cell, topic, port);
 	return true;
 }
 
@@ -479,7 +499,6 @@ bool ROS_Link::add_cell(ros::Subscriber* cell, string& topic, int& connect_port)
 	return true;
 }
 
-
 bool ROS_Link::add_cell(ros::Publisher* cell, string& topic)
 {
 	if(search_cell_topic(control_pub_, topic))
@@ -493,6 +512,24 @@ bool ROS_Link::add_cell(ros::Subscriber* cell, string& topic)
 	if(search_cell_topic(control_sub_, topic))
 	    return false;
 	add_cell(this -> control_sub_, cell, topic);
+	return true;
+}
+
+bool ROS_Link::add_cell(ros::Publisher* cell, string& topic, Connect_Port connect_type)
+{
+	if(search_cell_topic(control_pub_, topic))
+	    return false;
+	int port = static_cast<int>(connect_type);
+	add_cell(this -> control_pub_, cell, topic, port);
+	return true;
+}
+
+bool ROS_Link::add_cell(ros::Subscriber* cell, string& topic, Connect_Port connect_type)
+{
+	if(search_cell_topic(control_sub_, topic))
+	    return false;
+	int port = static_cast<int>(connect_type);
+	add_cell(this -> control_sub_, cell, topic, port);
 	return true;
 }
 
@@ -525,7 +562,7 @@ bool ROS_Link::add_cell(vector< cell_subscriber >& cell, ros::Subscriber* sub, s
 	s.sub = sub;
     s.topic = topic;
 //    s.transfer_type = TRANSFER_TYPE_SUBSCRIBER;
-    s.connect_port =connect_port;
+    s.connect_port = connect_port;
     cell.emplace_back(s);
     return true;
 }
